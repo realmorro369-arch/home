@@ -7,7 +7,7 @@ Morro 的个人导航主页，部署于 GitHub Pages。
 ## 个性化内容
 
 - 头像：`img/icon/logo.png`（morro.jpg）
-- 网站列表：仅保留 MyBlog，链接到 [MorroBlog](https://realmorro369-arch.github.io/blog/)
+- 网站列表：仅保留 MyBlog，链接到 [MorroBlog](https://realmorro369-arch.github.io/)
 - 社交链接：GitHub 与 Blog
 
 ## 本地运行

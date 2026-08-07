@@ -70,7 +70,7 @@ window.addEventListener(
 
     //延迟加载音乐播放器
     let element = document.createElement("script");
-    element.src = "./js/music.js";
+    element.src = "./js/music.js?v=2";
     document.body.appendChild(element);
 
     //中文字体缓加载-此处写入字体源文件 （暂时弃用）

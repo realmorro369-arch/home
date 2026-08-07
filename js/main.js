@@ -162,21 +162,11 @@ const getWeather = () => {
             $("#win_speed").html(res.lives[0].windpower + "级");
           } else {
             console.error("天气信息获取失败");
-            iziToast.show({
-              timeout: 2000,
-              icon: "fa-solid fa-cloud-sun",
-              message: "天气信息获取失败",
-            });
           }
         });
     })
     .catch((err) => {
       console.error("天气信息获取失败：" + err);
-      iziToast.show({
-        timeout: 2000,
-        icon: "fa-solid fa-cloud-sun",
-        message: "天气信息获取失败",
-      });
     });
 };
 

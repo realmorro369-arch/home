@@ -466,7 +466,7 @@ let content = `
 版 本 号：1.0
 更新日期：2026-08-07
 
-主页:  https://realmorro369-arch.github.io
+主页:  https://morro.asia
 Github:  https://github.com/realmorro369-arch
 `;
 console.log(

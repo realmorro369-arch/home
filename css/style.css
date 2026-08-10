@@ -636,6 +636,7 @@ span.time-text {
     justify-content: center;
     flex-wrap: wrap;
     align-items: baseline;
+    font-size: 0.9rem;
 }
 
 /*分割线*/

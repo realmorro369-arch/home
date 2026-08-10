@@ -620,7 +620,7 @@ input[type=range]::-webkit-slider-thumb {
     text-align: center;
     display: flex;
     flex-direction: column;
-    height: 165px;
+    min-height: 165px;
     font-size: 1.10rem;
 }
 
@@ -634,6 +634,8 @@ span.time-text {
     display: flex;
     flex-direction: row;
     justify-content: center;
+    flex-wrap: wrap;
+    align-items: baseline;
 }
 
 /*分割线*/

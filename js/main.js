@@ -141,28 +141,110 @@ $("#hitokoto").click(function () {
   }
 });
 
-// 获取天气
-// 请前往 https://www.mxnzp.com/doc/list 申请 app_id 和 app_secret
-const mainKey = "c577e8a40049cf51879ff72c9dc1ae8e"; // 高德开发者 Key
+// 获取天气（Open-Meteo 免费接口，无需注册；IP 定位用免费接口链 freeipapi → ipwho.is → ipinfo.io）
+const weatherText = (code) => {
+  const map = {
+    0: "晴",
+    1: "晴间多云",
+    2: "多云",
+    3: "阴",
+    45: "雾",
+    48: "雾凇",
+    51: "毛毛雨",
+    53: "小雨",
+    55: "中雨",
+    56: "冻雨",
+    57: "冻雨",
+    61: "小雨",
+    63: "中雨",
+    65: "大雨",
+    66: "冻雨",
+    67: "冻雨",
+    71: "小雪",
+    73: "中雪",
+    75: "大雪",
+    77: "雪粒",
+    80: "阵雨",
+    81: "阵雨",
+    82: "强阵雨",
+    85: "阵雪",
+    86: "强阵雪",
+    95: "雷雨",
+    96: "雷雨伴冰雹",
+    99: "雷雨伴冰雹",
+  };
+  return map[code] || "未知";
+};
+
+const windDirection = (deg) => {
+  if (deg == null) return "";
+  const dirs = ["北", "东北", "东", "东南", "南", "西南", "西", "西北"];
+  return dirs[Math.round(deg / 45) % 8];
+};
+
+const IP_APIS = [
+  {
+    url: "https://ipinfo.io/json",
+    parse: (j) =>
+      j && j.loc
+        ? (() => {
+            const m = /^(-?[\d.]+),(-?[\d.]+)$/.exec(j.loc);
+            return m
+              ? { lat: parseFloat(m[1]), lon: parseFloat(m[2]), city: j.city || j.country || "" }
+              : null;
+          })()
+        : null,
+  },
+  {
+    url: "https://freeipapi.com/api/json",
+    parse: (j) =>
+      j && j.latitude != null && j.longitude != null
+        ? { lat: j.latitude, lon: j.longitude, city: j.cityName || j.countryName || "" }
+        : null,
+  },
+  {
+    url: "https://ipwho.is/",
+    parse: (j) => {
+      if (!j || !j.success || j.latitude == null || j.longitude == null) return null;
+      return { lat: j.latitude, lon: j.longitude, city: j.city || j.country || "" };
+    },
+  },
+];
+
+const getIPLocation = () => {
+  let idx = 0;
+  const tryNext = () => {
+    if (idx >= IP_APIS.length) return Promise.reject(new Error("IP 定位失败"));
+    const api = IP_APIS[idx++];
+    return fetch(api.url)
+      .then((response) => response.json())
+      .then((j) => {
+        const loc = api.parse(j);
+        if (!loc) throw new Error("定位数据无效");
+        return loc;
+      })
+      .catch(tryNext);
+  };
+  return tryNext();
+};
+
 const getWeather = () => {
-  fetch(`https://restapi.amap.com/v3/ip?key=${mainKey}`)
-    .then((response) => response.json())
-    .then((res) => {
-      const adcode = res.adcode;
-      $("#city_text").html(res.city);
-      fetch(
-        `https://restapi.amap.com/v3/weather/weatherInfo?key=${mainKey}&city=${adcode}`
+  getIPLocation()
+    .then((loc) => {
+      $("#city_text").html(loc.city);
+      return fetch(
+        `https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current=temperature_2m,weather_code,wind_speed_10m,wind_direction_10m&timezone=auto`
       )
         .then((response) => response.json())
-        .then((res) => {
-          if (res.status && res.lives && res.lives.length) {
-            $("#wea_text").html(res.lives[0].weather);
-            $("#tem_text").html(res.lives[0].temperature + "°C&nbsp;");
-            $("#win_text").html(res.lives[0].winddirection + "风");
-            $("#win_speed").html(res.lives[0].windpower + "级");
-          } else {
-            console.error("天气信息获取失败");
+        .then((data) => {
+          const c = data && data.current;
+          if (!c) {
+            throw new Error("天气数据获取失败");
           }
+          $("#wea_text").html(weatherText(c.weather_code));
+          $("#tem_text").html(Math.round(c.temperature_2m) + "°C&nbsp;");
+          $("#win_text").html(windDirection(c.wind_direction_10m) + "风");
+          $("#win_speed").html(Math.round(c.wind_speed_10m) + "km/h");
         });
     })
     .catch((err) => {

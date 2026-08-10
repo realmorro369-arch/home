@@ -28,7 +28,7 @@ function getBgImg() {
 }
 
 function setBgImgDefault() {
-  let imgIndex = 1 + ~~(Math.random() * 3); //3为图片数量
+  let imgIndex = 1; // 固定使用红色背景 background1.webp
   // console.log(imgIndex);
   let imgUrl = `./img/background${imgIndex}.webp`;
   let attempts = 0;
@@ -73,9 +73,9 @@ function setBgImgDefault() {
 let bg_img_preinstall = {
   type: "1", // 1:默认背景 2:每日一图 3:随机风景 4:随机动漫
   1: "./img/background1.webp", // 默认背景
-  2: "https://api.dujin.org/bing/1920.php", // 每日一图
-  3: "https://api.btstu.cn/sjbz/api.php?lx=fengjing&format=images", // 随机风景
-  4: "https://www.dmoe.cc/random.php", // 随机动漫
+  2: "./img/background1.webp", // 每日一图（统一为红色背景）
+  3: "./img/background1.webp", // 随机风景（统一为红色背景）
+  4: "./img/background1.webp", // 随机动漫（统一为红色背景）
 };
 
 // 随机默认壁纸url加载
